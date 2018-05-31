@@ -42,9 +42,6 @@ for num_fourier = num_fourier_pow2
   for num_targets = 0 : 1
     
     amoeba2D_filename_root = ['amoeba_', num2str(num_targets), '_', num2str(num_fourier)];
-    ## if plot_amoeba2D
-    ##   fh_amoeba2D = figure('name', amoeba2D_filename_root);
-    ## endif
   
     if num_targets > 0
       amoeba_struct.num_targets     = 1;
@@ -58,22 +55,14 @@ for num_fourier = num_fourier_pow2
     amoeba2D_parent_folderpath      = [amoeba_struct.root_path, filesep, amoeba2D_parent_foldername];
     [STATUS, MSG, MSGID]            = mkdir(amoeba2D_parent_folderpath, amoeba2D_foldername);
     
-    for i_trial = 1:num_trials
-
-      amoeba_struct.name            = [amoeba2D_filename_root, '_', num2str(i_trial, fmt_trial_str)];
-      amoeba2D_filename             = [amoeba2D_parent_folderpath, filesep, amoeba2D_foldername, filesep, amoeba_struct.name];     
-
-      if mod( i_trial, plot_skip ) == 0
-    	disp(amoeba_struct.name);
-      endif
-      [amoeba_image] = amoeba2Dx(amoeba_struct);
-      
-      if plot_amoeba2D 
-    	amoeba = makeAmoeba2D(amoeba_struct, amoeba_image);
-    	imwrite(amoeba,[amoeba2D_filename, '.png']);
-      endif
-      
-    endfor % i_trial
+    
+    amoeba_struct_cell = cell(1,num_trials);
+    fileName_cell = cell(1,num_trials);
+    for i = 1:num_trials
+      amoeba_struct_cell{i} = amoeba_struct;
+      fileName_cell{i} = [amoeba2D_parent_folderpath, filesep, amoeba2D_foldername, filesep, [amoeba2D_filename_root, '_', num2str(i, fmt_trial_str)]];     
+    endfor
+    parcellfun(2,"makeAmoeba2DParallel", amoeba_struct_cell,fileName_cell);
     
   endfor % num_fourier_pow2
   
