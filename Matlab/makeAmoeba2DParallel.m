@@ -1,5 +1,5 @@
-function makeAmoeba2DParallel(amoeba_struct, amoeba2D_filename)
-  [amoeba_image] = amoeba2Dx(amoeba_struct);
+function makeAmoeba2DParallel(amoeba_struct, amoeba2D_filename, i)
+  [amoeba_image] = amoeba2Dx(amoeba_struct, i);
   amoeba = zeros(amoeba_struct.image_rect_size,amoeba_struct.image_rect_size);
   for i_amoeba = 1 : amoeba_struct.num_targets + amoeba_struct.num_distractors
     amoeba_image_x = amoeba_image{i_amoeba, 1};

@@ -23,7 +23,7 @@ amoeba_struct.num_fourier             = 4;
 amoeba_struct.min_gap                 = 8; %%16;
 amoeba_struct.max_gap                 = 16; %%32;
 amoeba_struct.base_shape              = 0;
-amoeba_struct.root_path               = '/Users/xzhang/Workspace/Amoeba/Matlab/amoeba2D';
+amoeba_struct.root_path               = '/home/xzhang/Workspaces/Amoeba/Matlab/amoeba2D';
 amoeba_struct.foldername              = "target";
 
 num_trials = 10;

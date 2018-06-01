@@ -1,19 +1,27 @@
-function [amoeba_image_x, amoeba_image_y] = amoebaSegments2x(amoeba_struct, distractor_flag)
+function [amoeba_image_x, amoeba_image_y] = amoebaSegments2x(amoeba_struct, distractor_flag,i)
 
 if nargin == 1
     distractor_flag = 0;
 end
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 gap_offest = amoeba_struct.delta_segment * rand(1);
 list_segments = [1; round(gap_offest:amoeba_struct.delta_segment:amoeba_struct.num_phi)'];
 list_segments = [list_segments, circshift(list_segments,-1)];
 list_segments(end, 2) = amoeba_struct.num_phi;
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 delta_gap = ...
     [0; round( rand(amoeba_struct.num_segments, 1) * (amoeba_struct.max_gap - amoeba_struct.min_gap) + amoeba_struct.min_gap )];
 list_segments(:,1) = list_segments(:,1) + delta_gap;
 list_segments = min( list_segments, amoeba_struct.num_phi );
 list_segments = max( list_segments, 1 );
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 fourier_coef = amoeba_struct.fourier_ratio .* randn(amoeba_struct.num_fourier, 1);
 fourier_coef2 = repmat( amoeba_struct.fourier_ratio .* fourier_coef, [1, amoeba_struct.num_phi]);
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 fourier_phase = (pi/2) * rand(amoeba_struct.num_fourier, 1);
 fourier_phase2 = repmat(fourier_phase, [1, amoeba_struct.num_phi]);
 fourier_term = fourier_coef2 .* cos( amoeba_struct.fourier_arg2 + fourier_phase2);
@@ -23,12 +31,16 @@ fourier_min = min(fourier_sum(:));
 ## outer_diameter = ...
 ##     ( rand(1) * ( 1 - amoeba_struct.target_outer_min ) + amoeba_struct.target_outer_min ) ...
 ##     * amoeba_struct.target_outer_max * fix(amoeba_struct.image_rect_size/2);
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 outer_diameter = ...
     ( rand(1) * ( amoeba_struct.target_outer_max - amoeba_struct.target_outer_min ) + amoeba_struct.target_outer_min ) ...
     * fix(amoeba_struct.image_rect_size/2);
 ## inner_diameter = ...
 ##     ( rand(1) * ( 1 - amoeba_struct.target_inner_min ) + amoeba_struct.target_inner_min ) ...
 ##     * amoeba_struct.target_inner_max * outer_diameter;
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 inner_diameter = ...
     ( rand(1) * ( amoeba_struct.target_inner_max - amoeba_struct.target_inner_min ) + amoeba_struct.target_inner_min ) ...
     * outer_diameter;
@@ -50,6 +62,8 @@ if false %%amoeba_struct.base_shape == 1 % triangle
         inner_diameter( 2*num_phi_third+1:3*num_phi_third ) .* ...
         sec( fourier_arg_60degs );
     inner_diameter(3*num_phi_third+1:end) = inner_diameter(3*num_phi_third+1:end) * sec( fourier_arg_60degs(1) );
+    rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
     inner_diameter = circshift( inner_diameter, [1,fix( rand(1) * num_phi_third )] );
 end
 r_phi = inner_diameter + ...
@@ -78,6 +92,8 @@ end
 if distractor_flag == 1
     tot_segs = 0;
     while( tot_segs < amoeba_struct.num_segments )
+      rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
         poisson_num = fix( -log( rand(1) ) * amoeba_struct.segments_per_distractor * amoeba_struct.num_segments );
 		if poisson_num >  amoeba_struct.segments_per_distractor * amoeba_struct.num_segments
 			poisson_num = amoeba_struct.segments_per_distractor * amoeba_struct.num_segments;
@@ -98,6 +114,8 @@ if distractor_flag == 1
         end
         ave_x = ave_x / poisson_num;
         ave_y = ave_y / poisson_num;
+	rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
         rand_theta = ( pi / 8 ) + rand(1) * ( 7* pi / 4 );
         for i_seg = tot_segs - poisson_num + 1 : tot_segs
             x_old = amoeba_image_x{i_seg};
@@ -120,8 +138,12 @@ end
 %  || distractor_flag == 1
 % to eliminate difference in global density of clutter vs amoebas,
 % especiaolly at corners...
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 offset_x = 2 * ( rand(1) - 0.5 ) * ( fix(amoeba_struct.image_rect_size/2) - ...
     ( distractor_flag == 0 || distractor_flag == 1 ) * outer_diameter );
+rand('seed', sum(i* clock));
+amoeba_struct.rand_state = {rand('seed')};
 offset_y = 2 * ( rand(1) - 0.5 ) * ( fix(amoeba_struct.image_rect_size/2) - ...
     ( distractor_flag == 0 || distractor_flag == 1 ) * outer_diameter );
 i_seg_ndx = 0;
