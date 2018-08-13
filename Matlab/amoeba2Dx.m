@@ -1,4 +1,3 @@
-
 function [amoeba_image] = amoeba2Dx(amoeba_struct, i)
 
 amoeba_image = cell( amoeba_struct.num_targets + amoeba_struct.num_distractors, 2 );
@@ -9,9 +8,9 @@ amoeba_struct.fourier_arg2 = ...
     repmat((0:(amoeba_struct.num_fourier-1))',[1, amoeba_struct.num_phi]) .* ...
     repmat( amoeba_struct.fourier_arg, [amoeba_struct.num_fourier, 1] );
 % exponential is too regular...
-% amoeba_struct.fourier_ratio = exp(-(0:(amoeba_struct.num_fourier-1))/amoeba_struct.num_fourier)';
+## amoeba_struct.fourier_ratio = exp(-(0:(amoeba_struct.num_fourier-1))/amoeba_struct.num_fourier)';
 amoeba_struct.fourier_ratio = ones(amoeba_struct.num_fourier, 1);
-amoeba_struct.fourier_ratio(:) = 1.0 ./ [1:amoeba_struct.num_fourier]; 
+## amoeba_struct.fourier_ratio(:) = 1 ./ [1:amoeba_struct.num_fourier]; 
 amoeba_struct.delta_segment = amoeba_struct.num_phi / amoeba_struct.num_segments;
 
 %make targets & distractors
