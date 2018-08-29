@@ -1,6 +1,7 @@
 close all
 clear all
 setenv("GNUTERM", "x11");
+addpath("/home/xzhang/Workspaces/OpenPV/mlab/util");
 
 
 ## global amoeba_struct
@@ -32,13 +33,13 @@ plot_skip = 1;
 fmt_trial_str = "%05i";
   
 [STATUS, MSG, MSGID]                  = mkdir(amoeba_struct.root_path);
-num_fourier_pow2 = 2.^[2,3];
+num_fourier_pow2 = 2.^[2];
 for num_fourier = num_fourier_pow2
     
   amoeba_struct.num_fourier = num_fourier;
   amoeba2D_parent_foldername          = [num2str(num_fourier), 'FC'];
   [STATUS, MSG, MSGID]                = mkdir(amoeba_struct.root_path, amoeba2D_parent_foldername);
-
+  amoebs = cell(1,2);
   for num_targets = 0 : 1
     
     amoeba2D_filename_root1 = ['amoeba_', num2str(num_targets), '_', num2str(num_fourier)];
@@ -65,13 +66,23 @@ for num_fourier = num_fourier_pow2
     i_cell = cell(1,num_trials);
     for i = 1:num_trials
       amoeba_struct_cell{i} = amoeba_struct;
-      fileName_cell{i} = [amoeba2D_parent_folderpath, filesep, amoeba2D_foldername, filesep, [amoeba2D_filename_root1, '_', num2str(i, fmt_trial_str)]];     
-      amoeba_fileName_cell{i} = [amoeba2D_parent_folderpath, filesep, "amoeba", filesep, [amoeba2D_filename_root2, '_', num2str(i, fmt_trial_str)]]; 
       i_cell{i} = i;
     endfor
-    parcellfun(16,"makeAmoeba2DParallel", amoeba_struct_cell,fileName_cell, amoeba_fileName_cell,i_cell);
+    amoebas{num_targets + 1} = parcellfun(16,"makeAmoeba2DParallel2Channel", amoeba_struct_cell, i_cell);
   endfor % num_fourier_pow2
-  
+  imgs = [amoebas{1},amoebas{2}];
+  labels = [zeros(1,num_trials),ones(1,num_trials)];
+  idx = randperm(2 * num_trials);
+  fid = fopen([amoeba2D_parent_folderpath, filesep, "Label.txt"],"w");
+  for i = 1 : (2 * num_trials)
+    fprintf(fid,"%u\n",labels(idx(i)));
+  endfor % i
+  fclose(fid);
+  writepvpactivityfile([amoeba2D_parent_folderpath, filesep, "PixelLabel.pvp"],imgs(idx));
+  for i = 1 : (2 * num_trials)
+    imgs{i}.values = imgs{i}.values(:,:,1) + imgs{i}.values(:,:,2);
+  endfor %i
+  writepvpactivityfile([amoeba2D_parent_folderpath, filesep, "Images.pvp"],imgs(idx));
 endfor % for num_targets
 
 ## amoeba_struct.target_outer_max        = 0.85;%1; %max/min outer radius of target annulus, units of image rect
