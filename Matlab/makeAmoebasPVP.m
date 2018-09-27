@@ -11,7 +11,7 @@ amoeba_struct.name                    = 'amoeba2D_Medium';
 rand('twister', sum(100*clock));
 amoeba_struct.rand_state              = {rand('twister')};
 amoeba_struct.num_segments            = 2^4; # 2^4
-amoeba_struct.image_rect_size         = 256;
+amoeba_struct.image_rect_size         = 128;
 amoeba_struct.num_targets             = 1;
 amoeba_struct.num_distractors         = 3 - amoeba_struct.num_targets;
 amoeba_struct.segments_per_distractor = 2^(-3);  % 2^(-2);%as fraction of num_segments

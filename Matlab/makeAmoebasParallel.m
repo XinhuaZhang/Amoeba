@@ -10,7 +10,7 @@ amoeba_struct.name                    = 'amoeba2D_Medium';
 rand('twister', sum(100*clock));
 amoeba_struct.rand_state              = {rand('twister')};
 amoeba_struct.num_segments            = 2^4; # 2^4
-amoeba_struct.image_rect_size         = 256;
+amoeba_struct.image_rect_size         = 128;
 amoeba_struct.num_targets             = 1;
 amoeba_struct.num_distractors         = 3 - amoeba_struct.num_targets;
 amoeba_struct.segments_per_distractor = 2^(-3);  % 2^(-2);%as fraction of num_segments
@@ -26,13 +26,13 @@ amoeba_struct.base_shape              = 0;
 amoeba_struct.root_path               = ['/home/xzhang/Workspaces/Amoeba/Matlab/',amoeba_struct.name];
 amoeba_struct.foldername              = "target";
 
-num_trials = 2000;
+num_trials = 200000;
 plot_amoeba2D = 1;
 plot_skip = 1;
-fmt_trial_str = "%05i";
+fmt_trial_str = "%06i";
   
 [STATUS, MSG, MSGID]                  = mkdir(amoeba_struct.root_path);
-num_fourier_pow2 = 2.^[2,3];
+num_fourier_pow2 = 2.^[2];
 for num_fourier = num_fourier_pow2
     
   amoeba_struct.num_fourier = num_fourier;
@@ -43,6 +43,7 @@ for num_fourier = num_fourier_pow2
     
     amoeba2D_filename_root1 = ['amoeba_', num2str(num_targets), '_', num2str(num_fourier)];
     amoeba2D_filename_root2 = ['amoeba_2_', num2str(num_fourier)];
+    amoeba2D_filename_root3 = ['amoeba_3_', num2str(num_fourier)];
   
     if num_targets > 0
       amoeba_struct.num_targets     = 1;
@@ -57,6 +58,7 @@ for num_fourier = num_fourier_pow2
     [STATUS, MSG, MSGID]            = mkdir(amoeba2D_parent_folderpath, amoeba2D_foldername);
     if num_targets > 0
       [STATUS, MSG, MSGID]            = mkdir(amoeba2D_parent_folderpath, "amoeba");
+      [STATUS, MSG, MSGID]            = mkdir(amoeba2D_parent_folderpath, "clutter");
     endif
     
     
@@ -67,9 +69,10 @@ for num_fourier = num_fourier_pow2
       amoeba_struct_cell{i} = amoeba_struct;
       fileName_cell{i} = [amoeba2D_parent_folderpath, filesep, amoeba2D_foldername, filesep, [amoeba2D_filename_root1, '_', num2str(i, fmt_trial_str)]];     
       amoeba_fileName_cell{i} = [amoeba2D_parent_folderpath, filesep, "amoeba", filesep, [amoeba2D_filename_root2, '_', num2str(i, fmt_trial_str)]]; 
+      clutter_fileName_cell{i} = [amoeba2D_parent_folderpath, filesep, "clutter", filesep, [amoeba2D_filename_root3, '_', num2str(i, fmt_trial_str)]]; 
       i_cell{i} = i;
     endfor
-    parcellfun(16,"makeAmoeba2DParallel", amoeba_struct_cell,fileName_cell, amoeba_fileName_cell,i_cell);
+    parcellfun(16,"makeAmoeba2DParallel", amoeba_struct_cell,fileName_cell, amoeba_fileName_cell,clutter_fileName_cell,i_cell);
   endfor % num_fourier_pow2
   
 endfor % for num_targets
